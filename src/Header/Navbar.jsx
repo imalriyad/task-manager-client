@@ -1,8 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 
 const Navbar = () => {
-
-
   const navbarRoutes = [
     { name: "Home", path: "/" },
     { name: "About Us", path: "/about" },
@@ -16,8 +14,6 @@ const Navbar = () => {
       <NavLink to={item.path}>{item.name}</NavLink>
     </li>
   ));
-
- 
 
   return (
     <div>
@@ -48,37 +44,35 @@ const Navbar = () => {
             </ul>
           </div>
           <a className="md:text-3xl xl:text-4xl font-semibold text-2xl">
-            TaskEase
+            TaskManger
           </a>
         </div>
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1 font-medium">{NavbMenu}</ul>
         </div>
         <div className="navbar-end">
-        
-            <div className="dropdown dropdown-end">
-              <div tabIndex={0} className="m-1">
-                <img
-                  src={''}
-                  className="w-[35px] h-[35px] md:w-[40px] md:h-[40px] cursor-pointer object-cover rounded-full"
-                  alt=""
-                />
-              </div>
-              <ul
-                tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-              >
-                <Link to={"/dashboard"} className="btn btn-sm btn-neutral">
-                  Dashboard
-                </Link>
-                <li  className="btn mt-2 btn-sm btn-neutral">Logout</li>
-              </ul>
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} className="m-1">
+              <img
+                src={""}
+                className="w-[35px] h-[35px] md:w-[40px] md:h-[40px] cursor-pointer object-cover rounded-full"
+                alt=""
+              />
             </div>
-          
-            <Link to={"/login"} className="btn btn-sm btn-neutral">
-              Login
-            </Link>
-         
+            <ul
+              tabIndex={0}
+              className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <Link to={"/dashboard"} className="btn btn-sm btn-neutral">
+                Dashboard
+              </Link>
+              <li className="btn mt-2 btn-sm btn-neutral">Logout</li>
+            </ul>
+          </div>
+
+          <Link to={"/login"} className="btn btn-sm btn-neutral">
+            Login
+          </Link>
         </div>
       </div>
     </div>
