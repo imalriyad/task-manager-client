@@ -31,6 +31,7 @@ const Task = () => {
     document.getElementById("my_modal_4").showModal();
   };
 
+  // Handle Delete
   const handleDeleteTask = (id) => {
     swal({
       title: "Are you sure?",
@@ -43,6 +44,29 @@ const Task = () => {
         axiosPublic.delete(`/delete-task/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             swal("Poof! Your Task file has been deleted!", {
+              icon: "success",
+            });
+            refetch();
+          }
+        });
+      }
+    });
+  };
+
+  // Handle task type update
+  const handleTaskTag = async (_id, tag) => {
+    document.getElementById("my_modal_4").close();
+    swal({
+      title: "Are you sure?",
+      text: "Once update, you will not be able to undo",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        axiosPublic.put(`/update-tag/${_id}`, {tag}).then((res) => {
+          if (res.data.modifiedCount > 0) {
+            swal("Poof! Your Task tag updated", {
               icon: "success",
             });
             refetch();
@@ -165,17 +189,48 @@ const Task = () => {
       <div className=" pt-4 items-start justify-between gap-2">
         <div className="w-full relative gap-4 md:grid grid-cols-3 ">
           <dialog id="my_modal_4" className="modal">
-            <div className="modal-box md:p-10">
+            <div className="modal-box bg-gray-50 md:p-10">
               <form method="dialog">
                 <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
                   ✕
                 </button>
               </form>
-              <h3 className="font-bold text-lg">Title: {filterTask?.title}</h3>
+              <h1 className="text-center text-xl border-neutral border-b-2  pb-2">
+                Task Details
+              </h1>
+              <h3 className="font-bold text-lg pt-2">
+                Title: {filterTask?.title}
+              </h3>
               <p className="py-4">{filterTask?.description}</p>
-              <p>
-                <span className="font-semibold">Deadline</span>:{" "}
+              <p className="badge-warning badge">
+                <span className="font-semibold">Due</span>:{" "}
                 {filterTask?.deadline?.slice(0, 10)}{" "}
+              </p>
+              <p className="flex flex-wrap pt-4 gap-3">
+                {filterTask?.tag !== "complete" && (
+                  <button
+                    onClick={() => handleTaskTag(filterTask._id, "complete")}
+                    className="badge badge-neutral"
+                  >
+                    Mark as Complete
+                  </button>
+                )}
+                {filterTask?.tag !== "ongoing" && (
+                  <button
+                    onClick={() => handleTaskTag(filterTask._id, "ongoing")}
+                    className="badge badge-neutral"
+                  >
+                    Mark as Ongoing
+                  </button>
+                )}
+                {filterTask?.tag !== "todo" && (
+                  <button
+                    onClick={() => handleTaskTag(filterTask._id, "todo")}
+                    className="badge badge-neutral"
+                  >
+                    Mark as To DO
+                  </button>
+                )}
               </p>
             </div>
           </dialog>
