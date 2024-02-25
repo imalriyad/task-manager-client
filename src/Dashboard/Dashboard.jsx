@@ -25,7 +25,7 @@ const Dashboard = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const axiosPubic = useAxios();
   const { pathname } = useLocation();
-  console.log(pathname);
+
   const {
     register,
     handleSubmit,

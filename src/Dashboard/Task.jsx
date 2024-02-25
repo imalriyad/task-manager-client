@@ -6,6 +6,10 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
 import swal from "sweetalert";
 import useAxios from "../Hooks/useAxios";
+import { FaEdit } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import ReactDatePicker from "react-datepicker";
+import toast from "react-hot-toast";
 
 const Task = () => {
   const [task, refetch] = useTask();
@@ -15,6 +19,14 @@ const Task = () => {
   const [toDoTask, setToDoTask] = useState([]);
   const [onGoingTask, setOnGoingTask] = useState([]);
   const [completeTask, setCompleteTask] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     const toDo = task?.filter((item) => item.tag === "todo");
@@ -64,7 +76,7 @@ const Task = () => {
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        axiosPublic.put(`/update-tag/${_id}`, {tag}).then((res) => {
+        axiosPublic.put(`/update-tag/${_id}`, { tag }).then((res) => {
           if (res.data.modifiedCount > 0) {
             swal("Poof! Your Task tag updated", {
               icon: "success",
@@ -76,11 +88,41 @@ const Task = () => {
     });
   };
 
+  // handleModalforTaskUpdate
+  const handleModalforTaskUpdate = () => {
+    document.getElementById("my_modal_5").showModal();
+    document.getElementById("my_modal_4").close();
+  };
+
+  // Update modal Submission
+  const onSubmit = async (data) => {
+    const deadline = selectedDate;
+    const title = data?.title;
+    const id = data?.id;
+    console.log(id);
+    const description = data?.description;
+    const updateTask = {
+      deadline,
+      title,
+      description,
+    };
+    const res = await axiosPublic.patch(`/update-task/${id}`, updateTask);
+    console.log(res.data);
+    if (res.data.modifiedCount > 0) {
+      const modal = document.getElementById("my_modal_5");
+      modal.close();
+      toast.success("Task Updated Successfully 🎊");
+      refetch();
+      reset();
+    }
+  };
+
   return (
     <div>
       <h1 className="md:py-2 text-xl">Welcome Back, {user?.displayName}</h1>
       <div className="grid md:grid-cols-3 gap-6 grid-cols-1">
-        <div className="">
+        {/* Todo task */}
+        <div>
           <div className="bg-white mb-4 p-3 rounded-sm w-full border-t-2 border-orange-500 font-medium text-sm">
             <h1>To do</h1>
           </div>
@@ -115,6 +157,7 @@ const Task = () => {
           </div>
         </div>
 
+        {/* OnGoing task list */}
         <div className="flex flex-col">
           <div className="bg-white p-3 mb-4 rounded-sm w-full border-t-2 border-purple-500  font-medium text-sm">
             <h1>On Going</h1>
@@ -150,6 +193,7 @@ const Task = () => {
           </div>
         </div>
 
+        {/* Complte task list */}
         <div className="flex flex-col">
           <div className="bg-white p-3 mb-4 rounded-sm w-full border-t-2 border-green-500 font-medium text-sm">
             <h1>Complete</h1>
@@ -186,6 +230,7 @@ const Task = () => {
         </div>
       </div>
 
+      {/* Open modal for see task details */}
       <div className=" pt-4 items-start justify-between gap-2">
         <div className="w-full relative gap-4 md:grid grid-cols-3 ">
           <dialog id="my_modal_4" className="modal">
@@ -195,6 +240,12 @@ const Task = () => {
                   ✕
                 </button>
               </form>
+              <button
+                onClick={handleModalforTaskUpdate}
+                className="btn btn-sm btn-circle btn-ghost absolute left-4 top-2"
+              >
+                <FaEdit className="text-xl" />
+              </button>
               <h1 className="text-center text-xl border-neutral border-b-2  pb-2">
                 Task Details
               </h1>
@@ -235,6 +286,75 @@ const Task = () => {
             </div>
           </dialog>
         </div>
+
+        {/* modal for updating task */}
+        <dialog id="my_modal_5" className="modal">
+          <div className="modal-box bg-gray-50 md:p-10">
+            <form method="dialog">
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                ✕
+              </button>
+            </form>
+
+            <h1 className="text-center text-xl border-neutral border-b-2  pb-2">
+              Task Update
+            </h1>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className=" space-y-3  gap-4 md:pt-10 pt-5"
+            >
+              <input
+                type="text"
+                {...register("title")}
+                placeholder="Task Tittle"
+                value={filterTask.title}
+                onChange={(e) =>
+                  setFilterTask({ ...filterTask, title: e.target.value })
+                }
+                className="input focus:outline-none input-bordered text-xs input-sm w-full "
+              />{" "}
+              {errors.title?.type === "required" && (
+                <p role="alert" className="text-red-500 text-sm">
+                  Task Title is required
+                </p>
+              )}
+              <textarea
+                rows={6}
+                {...register("description")}
+                value={filterTask.description}
+                onChange={(e) =>
+                  setFilterTask({ ...filterTask, description: e.target.value })
+                }
+                className="textarea textarea-bordered  w-full focus:outline-none col-span-2 text-xs"
+                placeholder="Task Description"
+              ></textarea>{" "}
+              {errors.password?.type === "required" && (
+                <p role="alert" className="text-red-500 text-sm">
+                  Task Description is required
+                </p>
+              )}
+              <h1 className="">Pick The Deadline</h1>
+              <ReactDatePicker
+                showIcon
+                toggleCalendarOnIconClick
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+              />{" "}
+              <input
+                type="text"
+                {...register("id")}
+                defaultValue={filterTask._id}
+                className="text-white"
+              />
+              <button
+                type="submit"
+                className=" w-full col-span-2 btn-neutral btn  btn-sm "
+              >
+                Update Task
+              </button>
+            </form>
+          </div>
+        </dialog>
       </div>
     </div>
   );
