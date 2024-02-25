@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Google from "../Form/GoogleLogin";
 import { useForm } from "react-hook-form";
 import useAuth from "../Hooks/useAuth";
@@ -15,6 +15,9 @@ const Registration = () => {
   const [isShow, setShow] = useState(false);
   const [occupation, setOccupation] = useState("");
   const axiosPublic = useAxios();
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  
   const {
     register,
     handleSubmit,
@@ -28,6 +31,7 @@ const Registration = () => {
   const onSubmit = async (data) => {
     const email = data.email;
     const password = data.password;
+
     const imageFile = { image: data?.photourl[0] };
     const res = await axiosPublic.post(photoUploadApi, imageFile, {
       headers: {
@@ -44,7 +48,21 @@ const Registration = () => {
           photoURL: photoUrl,
         })
           .then(async () => {
-            toast.success("Registration Successfully! 🎉");
+            const newUser = {
+              name: data.name,
+              email,
+              password,
+              photoUrl,
+              occupation,
+            };
+            const res = await axiosPublic.post("/create-user", newUser);
+            if (res.status === 201) {
+              toast.error("user already exist");
+            }
+            if (res.data.insertedId) {
+              toast.success("Registration Successfully! 🎉");
+              navigate(state ? state : "/");
+            }
           })
           .catch((err) =>
             toast.error(`${err.message.slice(17).replace(")", "")}`)
@@ -231,9 +249,7 @@ const Registration = () => {
                     onChange={handleSelect}
                     className="select select-bordered w-full  focus:outline-none"
                   >
-                    <option selected>
-                      What is your occupation?
-                    </option>
+                    <option selected>What is your occupation?</option>
                     <option>Student</option>
                     <option>Teacher</option>
                     <option>Banker</option>

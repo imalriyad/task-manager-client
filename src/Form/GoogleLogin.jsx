@@ -1,15 +1,29 @@
 import toast from "react-hot-toast";
 import useAuth from "../Hooks/useAuth";
 import { useLocation, useNavigate } from "react-router-dom";
+import useAxios from "../Hooks/useAxios";
 
 const Google = () => {
   const { githubLogin, googleLogin } = useAuth();
   const { state } = useLocation();
   const navigate = useNavigate();
+  const axiosPublic = useAxios();
   const handleGithub = () => {
     githubLogin()
-      .then(() => {
-        toast.success("Login Successfully! 🎉");
+      .then(async (res) => {
+        const newUser = {
+          email: res.user.email,
+          photoUrl: res.user.photoURL,
+          name: res.user.displyName,
+        };
+        const response = await axiosPublic.post("/create-user", newUser);
+        if (response.status === 201) {
+          toast.error("user already exist");
+        }
+        if (response.data.insertedId) {
+          toast.success("Login Successfully! 🎉");
+          navigate(state ? state : "/");
+        }
       })
       .catch((error) => {
         console.log(error.message);
@@ -17,7 +31,13 @@ const Google = () => {
   };
   const handleGoogle = () => {
     googleLogin()
-      .then(() => {
+      .then(async (res) => {
+        const newUser = {
+          email: res.user.email,
+          photoUrl: res.user.photoURL,
+          name: res.user.displayName,
+        };
+        axiosPublic.post("/create-user", newUser);
         toast.success("Login Successfully! 🎉");
         navigate(state ? state : "/");
       })
