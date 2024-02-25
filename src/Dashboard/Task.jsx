@@ -98,15 +98,16 @@ const Task = () => {
   const onSubmit = async (data) => {
     const deadline = selectedDate;
     const title = data?.title;
-    const id = data?.id;
-    console.log(id);
     const description = data?.description;
     const updateTask = {
       deadline,
       title,
       description,
     };
-    const res = await axiosPublic.patch(`/update-task/${id}`, updateTask);
+    const res = await axiosPublic.patch(
+      `/update-task/${filterTask._id}`,
+      updateTask
+    );
     console.log(res.data);
     if (res.data.modifiedCount > 0) {
       const modal = document.getElementById("my_modal_5");
@@ -340,12 +341,6 @@ const Task = () => {
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
               />{" "}
-              <input
-                type="text"
-                {...register("id")}
-                defaultValue={filterTask._id}
-                className="text-white"
-              />
               <button
                 type="submit"
                 className=" w-full col-span-2 btn-neutral btn  btn-sm "
