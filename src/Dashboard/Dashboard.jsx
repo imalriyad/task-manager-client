@@ -21,7 +21,7 @@ import Task from "./Task";
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const [, refetch] = useTask();
-  const [priority, setPriority] = useState("");
+  const [taskType, setTaskType] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const axiosPubic = useAxios();
   const { pathname } = useLocation();
@@ -34,7 +34,7 @@ const Dashboard = () => {
   } = useForm();
 
   const handleSelect = (e) => {
-    setPriority(e.target.value);
+    setTaskType(e.target.value);
   };
   const navigate = useNavigate();
   const [isOpen, setMenu] = useState(false);
@@ -58,7 +58,7 @@ const Dashboard = () => {
       deadline,
       title,
       description,
-      priority,
+      tag: taskType,
       email,
     };
     const res = await axiosPubic.post("/create-task", newTask);
@@ -169,14 +169,14 @@ const Dashboard = () => {
                   </p>
                 )}
                 <select
-                  value={priority}
+                  value={taskType}
                   onChange={handleSelect}
                   className="select select-sm select-bordered w-full text-xs focus:outline-none"
                 >
-                  <option selected>Task Priority</option>
-                  <option>Low</option>
-                  <option>Moderate</option>
-                  <option>High</option>
+                  <option selected>Task Type</option>
+                  <option value="todo">To Do</option>
+                  <option value={"ongoing"}>OnGoing</option>
+                  <option value={"complete"}>Completed</option>
                 </select>
                 <textarea
                   rows={6}
