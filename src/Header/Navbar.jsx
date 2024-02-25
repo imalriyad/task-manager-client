@@ -58,7 +58,7 @@ const Navbar = () => {
             </ul>
           </div>
           <a className="md:text-3xl xl:text-4xl font-semibold text-2xl">
-            TaskEase
+            TaskManger
           </a>
         </div>
         <div className="navbar-center hidden lg:flex">
@@ -81,7 +81,12 @@ const Navbar = () => {
                 <Link to={"/dashboard"} className="btn btn-sm btn-neutral">
                   Dashboard
                 </Link>
-                <li onClick={handleLogout} className="btn mt-2 btn-sm btn-neutral">Logout</li>
+                <li
+                  onClick={handleLogout}
+                  className="btn mt-2 btn-sm btn-neutral"
+                >
+                  Logout
+                </li>
               </ul>
             </div>
           ) : (

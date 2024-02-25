@@ -7,8 +7,8 @@ import Contact from "../Pages/Contact";
 import Faq from "../Pages/Faq";
 import Login from "../Form/Login";
 import Registration from "../Form/Registration";
-
-
+import PrivateRoute from "../Private/PrivateRoute";
+import Dashboard from "../Dashboard/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -46,7 +46,14 @@ const router = createBrowserRouter([
       },
     ],
   },
-  
+  {
+    path: "dashboard",
+    element: (
+      <PrivateRoute>
+        <Dashboard></Dashboard>
+      </PrivateRoute>
+    ),
+  },
 ]);
 
 export default router;
